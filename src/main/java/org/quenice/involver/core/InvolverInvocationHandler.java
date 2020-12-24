@@ -112,7 +112,7 @@ public class InvolverInvocationHandler implements InvocationHandler {
             if (codecHandler == null) throw new CodecException("codecHandler is required when codec = Flag.TRUE");
 
             if (config.getCodecHandler() != null) {
-                cipherRequest = config.getCodecHandler().encode(plainRequest);
+                cipherRequest = config.getCodecHandler().encode(plainRequest, config.getExposedConfig().clone());
                 requestLog.setRequestEncodeSuccess(true);
             }
             return cipherRequest != null ? cipherRequest : plainRequest;
@@ -142,7 +142,7 @@ public class InvolverInvocationHandler implements InvocationHandler {
             }
 
             requestLog.setHttpSuccess(true);
-            return config.getRequestHandler().handle(config.getUrl(), request, config.getMethod());
+            return config.getRequestHandler().handle(config.getUrl(), request, config.getMethod(), config.getExposedConfig().clone());
         } catch (Exception e) {
             requestLog.setHttpSuccess(false);
             throw new InvolverException("Do http request Error.", e);
@@ -172,7 +172,7 @@ public class InvolverInvocationHandler implements InvocationHandler {
             }
 
             cipherResponse = response;
-            plainResponse = config.getCodecHandler().decode(cipherResponse);
+            plainResponse = config.getCodecHandler().decode(cipherResponse, config.getExposedConfig().clone());
             requestLog.setResponseDecodeSuccess(true);
             return plainResponse;
         } catch (Exception e) {

@@ -17,12 +17,9 @@ public class StaticConfig {
     private boolean subUrlDynamic;
     private String baseUrl;
     private String subUrl;
-    /**
-     * 第一位：参数index
-     * 第二位：baseUrl index
-     * 第三位：subUrl index
-     */
     private int[] indexs;
+    private String classAdditional;
+    private String methodAdditional;
     private CodecHandler codecHandler;
     private RequestHandler requestHandler;
     private LogHandler logHandler;
@@ -82,6 +79,22 @@ public class StaticConfig {
 
     public void setIndexs(int[] indexs) {
         this.indexs = indexs;
+    }
+
+    public String getClassAdditional() {
+        return classAdditional;
+    }
+
+    public void setClassAdditional(String classAdditional) {
+        this.classAdditional = classAdditional;
+    }
+
+    public String getMethodAdditional() {
+        return methodAdditional;
+    }
+
+    public void setMethodAdditional(String methodAdditional) {
+        this.methodAdditional = methodAdditional;
     }
 
     public CodecHandler getCodecHandler() {

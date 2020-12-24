@@ -28,8 +28,9 @@ import java.util.regex.Pattern;
  */
 public class ConfigResolver {
     final static int INDEX_PARAM = 0;
-    final static int INDEX_BASE_URL = 1;
-    final static int INDEX_SUB_URL = 2;
+    final static int INDEX_ADDITIONAL = 1;
+    final static int INDEX_BASE_URL = 2;
+    final static int INDEX_SUB_URL = 3;
 
     /**
      * 解析配置
@@ -62,7 +63,7 @@ public class ConfigResolver {
         computeFinalConfig(config, staticConfig, dynamicConfig);
 
         // 设置暴露配置
-        ExposedConfig exposedConfig = handleExposedConfig(config, classConfig, methodConfig);
+        ExposedConfig exposedConfig = handleExposedConfig(config, staticConfig, dynamicConfig);
 
         config.setStaticConfig(staticConfig);
         config.setDynamicConfig(dynamicConfig);
@@ -95,17 +96,18 @@ public class ConfigResolver {
 
     /**
      * 处理暴露出去的config
-     *
      * @param config
-     * @param classConfig
-     * @param methodConfig
+     * @param staticConfig
+     * @param dynamicConfig
+     * @return
      */
-    private static ExposedConfig handleExposedConfig(FinalConfig config, Http classConfig, Http methodConfig) {
+    private static ExposedConfig handleExposedConfig(FinalConfig config, StaticConfig staticConfig, DynamicConfig dynamicConfig) {
         ExposedConfig exposedConfig = new ExposedConfig();
         exposedConfig.setUrl(config.getUrl());
-        exposedConfig.setClassAdditional(classConfig != null ? classConfig.additional() : null);
-        exposedConfig.setMethodAdditional(methodConfig.additional());
-
+        exposedConfig.setClassAdditional(staticConfig.getClassAdditional());
+        exposedConfig.setMethodAdditional(staticConfig.getMethodAdditional());
+        exposedConfig.setAdditionalParam(dynamicConfig.getAdditional());
+        exposedConfig.setRawParam(dynamicConfig.getParam());
         return exposedConfig;
     }
 

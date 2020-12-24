@@ -2,12 +2,9 @@ package org.quenice.involver.helper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.quenice.involver.annotation.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
-import org.quenice.involver.annotation.BaseUrl;
-import org.quenice.involver.annotation.DynamicUrl;
-import org.quenice.involver.annotation.Http;
-import org.quenice.involver.annotation.SubUrl;
 import org.quenice.involver.entity.Flag;
 import org.quenice.involver.entity.HttpMethod;
 import org.quenice.involver.entity.StaticConfig;
@@ -98,6 +95,9 @@ final class StaticConfigResolver {
 
             // 处理URL
             handleUrls(config, classConfig, methodConfig, applicationContext);
+
+            // 处理additional
+            handleStaticAdditional(config, classConfig, methodConfig);
 
             // 放缓存
             cacheConfigs.put(mapKey, config);
@@ -222,13 +222,8 @@ final class StaticConfigResolver {
         }
 
         if (StringUtils.isEmpty(handlerBeanName)) {
-            try {
-                // 查找是否有默认实现
-                return applicationContext.getBean(TimeHandler.class);
-            } catch (Exception e) {
-                // 返回最基本默认实现
-                return DefaultSampleTimeHandler.getInstance();
-            }
+            // 返回最基本默认实现
+            return DefaultSampleTimeHandler.getInstance();
         }
 
         try {
@@ -239,7 +234,7 @@ final class StaticConfigResolver {
     }
 
     /**
-     * 确定 param / baseUrl / subUrl 的参数位置
+     * 确定参数位置
      *
      * @param method
      * @return
@@ -252,6 +247,7 @@ final class StaticConfigResolver {
         }
 
         int indexOfParam = -1;
+        int indexOfAdditional = -1;
         int indexOfBaseUrl = -1;
         int indexOfSubUrl = -1;
 
@@ -264,7 +260,7 @@ final class StaticConfigResolver {
                 continue;
             }
 
-            // 有annotation，判断是否为以下三个
+            // 有annotation
             for (Annotation ann : pAnnos) {
                 if (ann.annotationType() == BaseUrl.class) {
                     indexOfBaseUrl = i;
@@ -286,11 +282,16 @@ final class StaticConfigResolver {
                     continue;
                 }
 
+                if (ann.annotationType() == Additional.class) {
+                    indexOfAdditional = i;
+                    continue;
+                }
+
                 if (indexOfParam == -1) indexOfParam = i;
             }
         }
 
-        return new int[]{indexOfParam, indexOfBaseUrl, indexOfSubUrl};
+        return new int[]{indexOfParam, indexOfAdditional, indexOfBaseUrl, indexOfSubUrl};
     }
 
     /**
@@ -311,5 +312,17 @@ final class StaticConfigResolver {
             String staticMehtodUrl = methodConfig.url().equals("") ? methodConfig.value() : methodConfig.url();
             staticConfig.setSubUrl(ConfigResolver.getPropertiesValue(staticMehtodUrl, applicationContext));
         }
+    }
+
+    /**
+     * 处理静态的additional data
+     *
+     * @param staticConfig
+     * @param classConfig
+     * @param methodConfig
+     */
+    private static void handleStaticAdditional(StaticConfig staticConfig, Http classConfig, Http methodConfig) {
+        staticConfig.setClassAdditional(classConfig == null ? null : classConfig.additional());
+        staticConfig.setMethodAdditional(methodConfig.additional());
     }
 }

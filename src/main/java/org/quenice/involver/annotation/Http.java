@@ -48,7 +48,7 @@ public @interface Http {
     Flag codec() default Flag.NONE;
 
     /**
-     * 加解密handler的bean name。注意：handler必须为HttpCodecHandler的实现类
+     * 加解密handler的bean name。注意：handler必须为{@link org.quenice.involver.handler.CodecHandler}的实现类
      * <br>
      * 方法会覆盖接口
      *
@@ -57,7 +57,7 @@ public @interface Http {
     String codecHandler() default "";
 
     /**
-     * 执行http请求的handler (bean name)。注意：handler必须为HttpRequestHandler的实现类
+     * 执行http请求的handler (bean name)。注意：handler必须为{@link org.quenice.involver.handler.RequestHandler}的实现类
      * <br>
      * 方法会覆盖接口
      *
@@ -66,7 +66,7 @@ public @interface Http {
     String requestHandler() default "";
 
     /**
-     * http日志handler (bean name)。注意：handler必须为HttpLogHandler的实现类
+     * http日志handler (bean name)。注意：handler必须为{@link org.quenice.involver.handler.LogHandler}的实现类
      * <br>
      * 方法会覆盖接口
      *
@@ -76,8 +76,9 @@ public @interface Http {
 
     /**
      * 时间处理。
-     * 注意：handler必须为TimeHandler的实现类。
-     * 如果不配置这个handler，并且有实现了TimeHandler的spring bean，则使用该bean
+     * 注意：handler必须为{@link org.quenice.involver.handler.TimeHandler}的实现类。
+     * 如果不配置这个handler，则使用默认实现{@link org.quenice.involver.handler.DefaultSampleTimeHandler}
+     *
      * @return
      */
     String timeHandler() default "";

@@ -9,6 +9,7 @@ public class DynamicConfig {
     private String baseUrl;
     private String subUrl;
     private Object param;
+    private Object additional;
 
     public String getBaseUrl() {
         return baseUrl;
@@ -32,5 +33,13 @@ public class DynamicConfig {
 
     public void setParam(Object param) {
         this.param = param;
+    }
+
+    public Object getAdditional() {
+        return additional;
+    }
+
+    public void setAdditional(Object additional) {
+        this.additional = additional;
     }
 }

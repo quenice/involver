@@ -29,6 +29,7 @@ final class DynamicConfigResolver {
         DynamicConfig dynamicConfig = new DynamicConfig();
         handleUrls(dynamicConfig, staticConfig, args);
         handleParam(dynamicConfig, staticConfig, args);
+        handleAdditional(dynamicConfig, staticConfig, args);
         return dynamicConfig;
     }
 
@@ -62,6 +63,19 @@ final class DynamicConfigResolver {
         int indexOfParam = staticConfig.getIndexs()[ConfigResolver.INDEX_PARAM];
         if (indexOfParam > -1) {
             dynamicConfig.setParam(args[indexOfParam]);
+        }
+    }
+
+    /**
+     * 处理参数传进来的additional
+     * @param dynamicConfig
+     * @param staticConfig
+     * @param args
+     */
+    private static void handleAdditional(DynamicConfig dynamicConfig, StaticConfig staticConfig, Object[] args) {
+        int index = staticConfig.getIndexs()[ConfigResolver.INDEX_ADDITIONAL];
+        if (index > -1) {
+            dynamicConfig.setAdditional(args[index]);
         }
     }
 
