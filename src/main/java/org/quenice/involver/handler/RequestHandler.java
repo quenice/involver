@@ -4,11 +4,10 @@ import org.quenice.involver.annotation.Http;
 import org.quenice.involver.entity.HttpMethod;
 
 /**
- * Http发起请求handler.
- * 需要自己定义handler
+ * 发起Http请求handler.
  *
  * @author damon.qiu 2020/10/28 5:24 PM
- * @since 1.0
+ * @since 1.0.0
  */
 public interface RequestHandler {
     /**

@@ -20,9 +20,11 @@ import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 静态配置解析
+ * 静态配置解析。
+ * 静态配置解析完之后，会做缓存处理，防止无谓的重复解析，提高性能
  *
  * @author damon.qiu 12/22/20 5:31 PM
+ * @since 1.0.0
  */
 final class StaticConfigResolver {
 
@@ -65,10 +67,10 @@ final class StaticConfigResolver {
 
             // 获得类上http cofig
             Class<?> clazz = method.getDeclaringClass();
-            Http classConfig = clazz.getDeclaredAnnotation(Http.class);
+            Http classConfig = clazz.getAnnotation(Http.class);
 
             // 获得method上http config
-            Http methodConfig = method.getDeclaredAnnotation(Http.class);
+            Http methodConfig = method.getAnnotation(Http.class);
 
             config.setEncrypt(handleEncrypt(classConfig, methodConfig));
             config.setMethod(handleMethod(classConfig, methodConfig));
@@ -130,7 +132,14 @@ final class StaticConfigResolver {
         return false;
     }
 
-
+    /**
+     * 处理codec handler
+     *
+     * @param classConfig
+     * @param methodConfig
+     * @param applicationContext
+     * @return
+     */
     private static CodecHandler handleEncryptHanlder(Http classConfig, Http methodConfig, ApplicationContext applicationContext) {
         String handlerBeanName = methodConfig.codecHandler();
         if (StringUtils.isEmpty(handlerBeanName) && classConfig != null) {
@@ -268,7 +277,7 @@ final class StaticConfigResolver {
                 }
 
                 if (ann.annotationType() == DynamicUrl.class) {
-                    DynamicUrl du = method.getDeclaredAnnotation(DynamicUrl.class);
+                    DynamicUrl du = method.getAnnotation(DynamicUrl.class);
                     if (du.type() == UrlType.BASE) {
                         indexOfBaseUrl = i;
                     } else {
@@ -284,6 +293,14 @@ final class StaticConfigResolver {
         return new int[]{indexOfParam, indexOfBaseUrl, indexOfSubUrl};
     }
 
+    /**
+     * 处理url
+     *
+     * @param staticConfig
+     * @param classConfig
+     * @param methodConfig
+     * @param applicationContext
+     */
     private static void handleUrls(StaticConfig staticConfig, Http classConfig, Http methodConfig, ApplicationContext applicationContext) {
         if (!staticConfig.isBaseUrlDynamic()) {
             String staticClassUrl = classConfig == null ? "" : ((classConfig.url().equals("") ? classConfig.value() : classConfig.url()));

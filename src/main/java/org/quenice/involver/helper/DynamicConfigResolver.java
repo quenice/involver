@@ -5,15 +5,20 @@ import org.quenice.involver.entity.StaticConfig;
 import org.quenice.involver.exception.ConfigResolveException;
 
 /**
- * 动态配置解析
+ * 动态配置解析。
+ * 这部分解析，在每次代理调用时，都会执行，
+ * 但是由于繁杂耗时的解析都在{@link StaticConfigResolver}中做了并缓存了起来，
+ * 所以这块的解析量非常小
  *
  * @author damon.qiu 12/22/20 5:31 PM
+ * @see StaticConfigResolver
+ * @since 1.0.0
  */
 final class DynamicConfigResolver {
 
 
     /**
-     * 处理解析
+     * 解析动态配置
      *
      * @param staticConfig
      * @param args

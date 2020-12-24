@@ -14,10 +14,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 配置解析器
+ * 配置解析器。
+ * 动态代理时，会获取被代理接口上的{@link Http}配置和方法上的{@link Http}配置，
+ * 需要通过这两个{@link Http}解析出所有的配置。
+ *
+ * <p>
+ * 并且为了提升性能，减少不必要的开销，对静态的配置做了缓存处理。
+ * </p>
  *
  * @author damon.qiu 2020/10/28 4:29 PM
- * @since 1.0
+ * @see Http
+ * @since 1.0.0
  */
 public class ConfigResolver {
     final static int INDEX_PARAM = 0;
@@ -66,6 +73,7 @@ public class ConfigResolver {
 
     /**
      * 根据解析出来的配置，计算出最终结果。这个提供给代理执行类辅助执行
+     *
      * @param finalConfig
      * @param staticConfig
      * @param dynamicConfig

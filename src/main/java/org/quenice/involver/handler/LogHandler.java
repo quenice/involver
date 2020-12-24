@@ -7,6 +7,7 @@ import org.quenice.involver.entity.RequestLog;
  * 日志处理器
  *
  * @author damon.qiu 2020/10/28 6:18 PM
+ * @since 1.0.0
  */
 public interface LogHandler {
 
