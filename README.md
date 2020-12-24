@@ -14,9 +14,9 @@
 
 而且`Involver`还是类型安全的
 
-# Getting started
+# 开始使用
 
-## installation
+## 安装
 在`pom.xml`中加上以下依赖：
 
 ```
@@ -27,32 +27,84 @@
 </dependency>
 ```
 
-## Usage
+## 使用
 
-### Implement `RequestHandler`(required)
+### 实现 `RequestHandler` 接口(required)
 
 `RequestHandler` 的实现类提供`http`执行的逻辑。
 
 你可以自行选择是使用 `Httpclient`, `HttpURLConnection` 或是其他任何组件
  
-### Implement `CodecHandler` (optional)
+### 实现 `CodecHandler` 接口(optional)
 
 `CodecHandler` 的实现类提供对`请求参数`和`响应结果`进行编码解码(加解密)
 
 注意：目前`involver`版本中，对`请求参数`和`响应结果`会自动使用`jackson`进行`json`转换。后续版本可能会提供Handler来让使用者自行决定如何处理
 
-### Implement `LogHandler` (optional)
+例子：
+
+```java
+@Service("rspHttpCodecHandler")
+public class RspHttpCodecHandler implements CodecHandler {
+    @Autowired
+    private HttpApiCodec httpApiCodec;
+
+    @Override
+    public String encode(String value, ExposedConfig exposedConfig) throws CodecException {
+        return httpApiCodec.encode(value);
+    }
+
+    @Override
+    public String decode(String value, ExposedConfig exposedConfig) throws CodecException {
+        return httpApiCodec.decode(value);
+    }
+}
+```
+
+### 实现 `LogHandler` 接口(optional)
 
 `LogHandler` 的实现类提供整个请求过程的日志处理
 
+例子：
 
-### Implement `TimeHandler` (optional)
+```java
+@Service("integrationHttpLogHandler")
+public class IntegrationHttpLogHandler implements LogHandler {
+    @Async
+    @Override
+    public void handle(RequestLog requestLog, ExposedConfig exposedConfig) {
+        //把requestLog记录到DB
+    }
+}
+```
+
+### 实现 `TimeHandler` 接口(optional)
 
 `TimeHandler` 的实现类用于获取当前时间。
 
 由于在 `LogHandler` 中会记录下`请求时间`和`响应时间`，而且这两个时间可能会由用户最终保存到数据库，所以需要保证时间的准确性。
 
 另外，`involver`提供了一个`DefaultSampleTimeHandler`默认实现
+
+例子：
+
+```java
+@Service("integrationTimeHandler")
+public class IntegrationTimeHandler implements TimeHandler {
+    @Autowired
+    private DateManager dateManager;
+
+    @Override
+    public long getTime() {
+        return dateManager.getTime();
+    }
+
+    @Override
+    public Date getDate() {
+        return dateManager.getDate();
+    }
+}
+```
 
 ### 编写业务接口
 实现好以上 `Handler` 之后，接下来就要编写业务接口了
@@ -66,10 +118,14 @@
         logHandler = "integrationHttpLogHandler",
         codecHandler = "rspHttpCodecHandler",
         requestHandler = "rspHttpRequestHandler",
+        timeHandler = "integrationTimeHandler",
         additional = "additional data")
 public interface RspHttpService {
     @Http(url = "purchase", additional = "additional data")
     RspOutPurchaseResponse purchase(RspOutPurchaseRequest request);
+    
+    @Http
+    String purchase1(String param, @Additional String additionalParam, @BaseUrl String baseUrl, @SubUrl String subUrl);
 }
 ```
 
@@ -104,6 +160,20 @@ public class TestService {
 ```
 
 ## 详细配置
+### @InvolverScan
+
+`involver` 业务组件扫描配置，类似`mybatis`中的`MapperScan`
+
+根据扫描配置，告诉`spring`如何扫描到业务接口，并把这些接口代理后装载到`spring`容器
+
+以下三个参数可以配合使用，取交叉集
+
+Properties|Required|Desc.
+---|---|---
+basePackages|否|扫描的包
+annotationClass|否|扫描的接口上的注解
+markerInterface|否|扫描的接口继承的接口
+
 ### @Http
 
 `@Http` 可以配置在接口上，也能配置在方法上.
@@ -118,3 +188,28 @@ requestHandler|是|`spring bean`名字，继承自`RequestHandler`；用于处�
 logHandler|否|`spring bean`名字，继承自`LogHandler`；用于处理整个请求/执行过程中的日志；方法上的配置会覆盖接口上的配置。
 timeHandler|否|`spring bean`名字，继承自`TimeHandler`；用于获取当前时间；方法上的配置会覆盖接口上的配置。
 additional|否|附加数据；用于在各`Handler`中做个性化判断
+
+### @BaseUrl
+
+`@BaseUrl` 注解的参数将覆盖接口上的`@Http`.`url`
+
+### @SubUrl
+
+`@SubUrl` 注解的参数将覆盖方法上的`@Http`.`url`
+
+### @Additional
+
+`@Additional` 注解的参数会作为`ExposedConfig`的属性，暴露于各个`Handler`的方法中
+
+# 依赖兼容性
+## JDK 版本
+
+`>= 1.7`
+
+## Spring Boot 版本
+
+`>=1.5.3.RELEASE`
+
+## Spring 版本
+
+`>=4.3.8.RELEASE`
