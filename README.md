@@ -180,7 +180,7 @@ markerInterface|否|扫描的接口继承的接口
 
 Properties|Required|Desc.
 ---|---|---
-url|否|请求路径。如果配置在接口上，者代表基路径，如果配置在方法上，则代表子路径
+url|否|请求路径；支持字符串常量和`spring`配置文件表达式；如果配置在接口上，则代表基路径，如果配置在方法上，则代表子路径
 method|否|http method
 codec|否|http请求是否需要编码/解码
 codecHandler|否|`spring bean`名字，继承自`CodecHandler`；用于处理请求参数/响应结果的加解密；如果`code=Flag.TRUE`，则必须配置该handler；方法上的配置会覆盖接口上的配置。
@@ -213,3 +213,7 @@ additional|否|附加数据；用于在各`Handler`中做个性化判断
 ## Spring 版本
 
 `>=4.3.8.RELEASE`
+
+## Jackson版本
+
+`>=2.8.8`
