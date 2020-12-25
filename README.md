@@ -1,8 +1,6 @@
 # Involver for Spring Boot
 
-`Involver` is http component for Spring Boot
-
-它能够为基于Spring Boot框架的项目提供低侵入式的Http访问服务。
+`Involver` 为基于Spring Boot框架的项目提供低侵入式的Http访问服务。
 
 `Involver`提供以下功能
 - 日志记录
