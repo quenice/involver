@@ -1,14 +1,14 @@
 # Involver for Spring Boot
 
-`Involver` 为基于Spring Boot框架的项目提供低侵入式的Http访问服务。
+`Involver` 为基于Spring Boot框架的项目提供低侵入式的**执行流程管理**和**执行过程数据的收集**。
 
-`Involver`提供以下功能
+`Involver`目前提供以下功能的装配
 - 日志记录
-- Http访问执行
-- 访问加解密
+- Http请求执行
+- 请求/响应加解密
 - 时间获取
 
-但是注意，这些功能都是以 Handler 接口的形式，让使用者自行提供实现方式，而`Involver`根据配置，来判断是否装配这些功能
+这些功能都是以 `Handler` 接口的形式，让使用者自行提供实现方式，而 `Involver` 根据配置，来判断是否装配这些功能。
 
 而且`Involver`还是类型安全的
 
@@ -32,6 +32,24 @@
 `RequestHandler` 的实现类提供`http`执行的逻辑。
 
 你可以自行选择是使用 `Httpclient`, `HttpURLConnection` 或是其他任何组件
+
+例子：
+
+```java
+@Service("rspHttpRequestHandler")
+public class RspHttpRequestHandler implements RequestHandler {
+    @Override
+    public String handle(String url, String request, HttpMethod httpMethod, ExposedConfig exposedConfig) {
+        String result = null;
+        try {
+            result = HttpUtils.doPost(url, request);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+}
+```
  
 ### 实现 `CodecHandler` 接口(optional)
 
