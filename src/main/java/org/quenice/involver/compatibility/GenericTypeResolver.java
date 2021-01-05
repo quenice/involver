@@ -8,9 +8,10 @@ import java.lang.reflect.TypeVariable;
 
 /**
  * 为了兼容spring5.0以下的版本
+ *
  * @author damon.qiu 12/23/20 7:02 PM
  */
-public abstract class GenericTypeResolver extends org.springframework.core.GenericTypeResolver {
+public abstract class GenericTypeResolver {
     private static ResolvableType resolveVariable(TypeVariable<?> typeVariable, ResolvableType contextType) {
         ResolvableType resolvedType;
         if (contextType.hasGenerics()) {
@@ -47,8 +48,7 @@ public abstract class GenericTypeResolver extends org.springframework.core.Gener
                         return resolved;
                     }
                 }
-            }
-            else if (genericType instanceof ParameterizedType) {
+            } else if (genericType instanceof ParameterizedType) {
                 ResolvableType resolvedType = ResolvableType.forType(genericType);
                 if (resolvedType.hasUnresolvableGenerics()) {
                     ParameterizedType parameterizedType = (ParameterizedType) genericType;
@@ -61,12 +61,10 @@ public abstract class GenericTypeResolver extends org.springframework.core.Gener
                                     (TypeVariable<?>) typeArgument, ResolvableType.forClass(contextClass));
                             if (resolvedTypeArgument != ResolvableType.NONE) {
                                 generics[i] = resolvedTypeArgument.resolve();
-                            }
-                            else {
+                            } else {
                                 generics[i] = ResolvableType.forType(typeArgument).resolve();
                             }
-                        }
-                        else {
+                        } else {
                             generics[i] = ResolvableType.forType(typeArgument).resolve();
                         }
                     }
